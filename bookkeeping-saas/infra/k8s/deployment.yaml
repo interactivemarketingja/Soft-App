@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookkeeping-saas-backend
+  labels:
+    app: bookkeeping-saas
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bookkeeping-saas
+  template:
+    metadata:
+      labels:
+        app: bookkeeping-saas
+    spec:
+      containers:
+      - name: backend
+        image: bookkeeping-saas-backend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: database-url
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: api-secret
+              key: api-key
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"
